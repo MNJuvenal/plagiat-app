@@ -5,7 +5,7 @@ import re
 import random
 from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
 import torch
-from googletrans import Translator
+from deep_translator import GoogleTranslator
 from langdetect import detect, DetectorFactory
 import time
 
@@ -46,7 +46,7 @@ def paraphrase_text_ai(text, max_sentences=10):
             print("Détection de langue échouée, utilisation du français par défaut")
 
         # Initialiser le traducteur
-        translator = Translator()
+        translator = GoogleTranslator(source='fr', target='en')
         
         # Si le texte est en français, on le traduit en anglais d'abord
         if detected_lang == 'fr':
@@ -60,8 +60,8 @@ def paraphrase_text_ai(text, max_sentences=10):
                 for sentence in sentences:
                     if len(sentence) > 5:
                         time.sleep(0.1)  # Éviter les limites de taux
-                        translated = translator.translate(sentence, src='fr', dest='en')
-                        translated_sentences.append(translated.text)
+                        translated = translator.translate(sentence)
+                        translated_sentences.append(translated)
                     else:
                         translated_sentences.append(sentence)
                 
@@ -91,6 +91,9 @@ def paraphrase_text_ai(text, max_sentences=10):
         if detected_lang == 'fr':
             print("Retraduction anglais -> français...")
             try:
+                # Créer un nouveau traducteur pour EN->FR
+                translator_en_fr = GoogleTranslator(source='en', target='fr')
+                
                 # Découper en phrases pour une meilleure retraduction
                 sentences = re.split(r'[.!?]+', paraphrased_english)
                 sentences = [s.strip() for s in sentences if s.strip()]
@@ -99,8 +102,8 @@ def paraphrase_text_ai(text, max_sentences=10):
                 for sentence in sentences:
                     if len(sentence) > 5:
                         time.sleep(0.1)  # Éviter les limites de taux
-                        retranslated = translator.translate(sentence, src='en', dest='fr')
-                        retranslated_sentences.append(retranslated.text)
+                        retranslated = translator_en_fr.translate(sentence)
+                        retranslated_sentences.append(retranslated)
                     else:
                         retranslated_sentences.append(sentence)
                 
