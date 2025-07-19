@@ -3,31 +3,43 @@ services:
   - type: web
     name: plagiat-backend
     env: python
+    runtime: python
     plan: free
     region: oregon
     branch: main
     rootDir: ./backend
-    buildCommand: pip install -r requirements.txt
+    buildCommand: |
+      pip install --upgrade pip
+      pip install -r requirements.txt
     startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
     envVars:
       - key: SERPAPI_KEY
         value: your_serpapi_key_here
       - key: PYTHON_VERSION
-        value: 3.11.0
+        value: 3.11
       - key: ENVIRONMENT
         value: production
-    healthCheckPath: /docs
-    dockerfilePath: null  # Désactiver l'utilisation du Dockerfile
+      - key: PORT
+        value: 10000
+    healthCheckPath: /health
+    dockerContext: null
+    dockerfilePath: null
     
   # Service Frontend
-  - type: web
+  - type: static
     name: plagiat-frontend
-    env: node
-    plan: free
-    region: oregon
-    branch: main
-    rootDir: ./frontend
-    buildCommand: npm install && npm run build
-    startCommand: npm run preview -- --host 0.0.0.0 --port $PORT
-    publishPath: ./dist
-    dockerfilePath: null  # Désactiver l'utilisation du Dockerfile
+    buildCommand: |
+      cd frontend
+      npm install
+      npm run build
+    publishPath: ./frontend/dist
+    pullRequestPreviewsEnabled: false
+    headers:
+      - key: X-Frame-Options
+        value: DENY
+      - key: X-Content-Type-Options
+        value: nosniff
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
