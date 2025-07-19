@@ -1,0 +1,23 @@
+services:
+  # Service Backend API
+  - type: web
+    name: plagiat-backend
+    env: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: SERPAPI_KEY
+        value: your_serpapi_key_here
+      - key: PYTHON_VERSION
+        value: 3.11.0
+    healthCheckPath: /docs
+    
+  # Service Frontend
+  - type: web
+    name: plagiat-frontend
+    env: node
+    plan: free
+    buildCommand: npm install && npm run build
+    startCommand: npm run preview -- --host 0.0.0.0 --port $PORT
+    publishPath: ./dist

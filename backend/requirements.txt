@@ -1,0 +1,15 @@
+fastapi
+uvicorn
+requests
+python-dotenv
+beautifulsoup4
+sentence-transformers
+scikit-learn
+python-docx
+docx2txt
+PyPDF2
+transformers
+torch
+googletrans==4.0.0rc1
+langdetect
+protobuf
