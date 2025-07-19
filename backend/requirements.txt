@@ -2,12 +2,13 @@ fastapi
 uvicorn
 requests
 python-dotenv
+python-multipart
 beautifulsoup4
 sentence-transformers
 scikit-learn
 python-docx
 docx2txt
-PyPDF2
+pypdf
 transformers
 torch
 deep-translator

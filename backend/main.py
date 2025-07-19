@@ -5,7 +5,7 @@ from plagiat import check_similarity, reformulate_text
 import os
 import io
 import docx2txt
-import PyPDF2
+import pypdf
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -64,7 +64,7 @@ async def upload_file(file: UploadFile = File(...)):
     
     if file.filename.endswith(".pdf"):
         try:
-            reader = PyPDF2.PdfReader(io.BytesIO(contents))
+            reader = pypdf.PdfReader(io.BytesIO(contents))
             text = "".join(page.extract_text() or "" for page in reader.pages)
             print(f"Extracted PDF text length: {len(text)}")
         except Exception as e:

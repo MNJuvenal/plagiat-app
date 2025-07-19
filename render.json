@@ -1,0 +1,46 @@
+{
+  "services": [
+    {
+      "type": "web",
+      "name": "plagiat-backend",
+      "env": "python",
+      "plan": "free",
+      "region": "oregon",
+      "branch": "main",
+      "rootDir": "./backend",
+      "buildCommand": "pip install --upgrade pip && pip install -r requirements.txt",
+      "startCommand": "uvicorn main:app --host 0.0.0.0 --port $PORT",
+      "envVars": [
+        {
+          "key": "SERPAPI_KEY",
+          "value": "your_serpapi_key_here"
+        },
+        {
+          "key": "PYTHON_VERSION", 
+          "value": "3.11.0"
+        },
+        {
+          "key": "ENVIRONMENT",
+          "value": "production"
+        }
+      ],
+      "healthCheckPath": "/docs",
+      "disk": {
+        "name": "data",
+        "mountPath": "/data"
+      }
+    },
+    {
+      "type": "web", 
+      "name": "plagiat-frontend",
+      "env": "node",
+      "plan": "free",
+      "region": "oregon", 
+      "branch": "main",
+      "rootDir": "./frontend",
+      "buildCommand": "npm install && npm run build",
+      "startCommand": "npm run preview -- --host 0.0.0.0 --port $PORT",
+      "publishPath": "./dist"
+    }
+  ]
+}

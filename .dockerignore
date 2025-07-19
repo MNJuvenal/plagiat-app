@@ -1,0 +1,37 @@
+# Ignore Docker files during Render deployment
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# Ignore development files
+.git
+.gitignore
+.env.local
+.env.development
+*.log
+*.lock
+
+# Ignore test files
+tests/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+.pytest_cache/
+coverage.xml
+htmlcov/
+
+# Ignore node_modules
+node_modules/
+npm-debug.log*
+
+# Ignore IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db

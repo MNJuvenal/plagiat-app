@@ -4,6 +4,9 @@ services:
     name: plagiat-backend
     env: python
     plan: free
+    region: oregon
+    branch: main
+    rootDir: ./backend
     buildCommand: pip install -r requirements.txt
     startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
     envVars:
@@ -11,13 +14,20 @@ services:
         value: your_serpapi_key_here
       - key: PYTHON_VERSION
         value: 3.11.0
+      - key: ENVIRONMENT
+        value: production
     healthCheckPath: /docs
+    dockerfilePath: null  # Désactiver l'utilisation du Dockerfile
     
   # Service Frontend
   - type: web
     name: plagiat-frontend
     env: node
     plan: free
+    region: oregon
+    branch: main
+    rootDir: ./frontend
     buildCommand: npm install && npm run build
     startCommand: npm run preview -- --host 0.0.0.0 --port $PORT
     publishPath: ./dist
+    dockerfilePath: null  # Désactiver l'utilisation du Dockerfile
