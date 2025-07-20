@@ -12,21 +12,29 @@ import time
 # Pour avoir des résultats de détection de langue cohérents
 DetectorFactory.seed = 0
 
-model = SentenceTransformer('paraphrase-MiniLM-L6-v2')
-
-# Charger le modèle de paraphrase T5 (chargement différé pour éviter les ralentissements)
+# Chargement différé des modèles pour optimiser la mémoire
+model = None
 paraphrase_tokenizer = None
 paraphrase_model = None
+
+def load_sentence_model():
+    """Charge le modèle SentenceTransformer de manière différée"""
+    global model
+    if model is None:
+        print("Chargement du modèle SentenceTransformer...")
+        model = SentenceTransformer('paraphrase-MiniLM-L6-v2')
+        print("Modèle SentenceTransformer chargé !")
+    return model
 
 def load_paraphrase_model():
     """Charge le modèle de paraphrase T5 anglais de manière différée"""
     global paraphrase_tokenizer, paraphrase_model
     if paraphrase_tokenizer is None or paraphrase_model is None:
         print("Chargement du modèle de paraphrase T5 anglais...")
-        # Utiliser un modèle anglais performant pour la paraphrase
-        paraphrase_tokenizer = AutoTokenizer.from_pretrained("Vamsi/T5_Paraphrase_Paws")
-        paraphrase_model = AutoModelForSeq2SeqLM.from_pretrained("Vamsi/T5_Paraphrase_Paws")
-        print("Modèle de paraphrase T5 anglais chargé avec succès !")
+        # Utiliser un modèle plus léger pour éviter l'OOM
+        paraphrase_tokenizer = AutoTokenizer.from_pretrained("t5-small")
+        paraphrase_model = AutoModelForSeq2SeqLM.from_pretrained("t5-small")
+        print("Modèle de paraphrase T5 léger chargé avec succès !")
     return paraphrase_tokenizer, paraphrase_model
 
 def paraphrase_text_ai(text, max_sentences=10):
@@ -403,8 +411,9 @@ def check_similarity(text, api_key):
         if not page_text:
             continue
         try:
-            emb1 = model.encode(text, convert_to_tensor=True)
-            emb2 = model.encode(page_text[:1000], convert_to_tensor=True)
+            sentence_model = load_sentence_model()
+            emb1 = sentence_model.encode(text, convert_to_tensor=True)
+            emb2 = sentence_model.encode(page_text[:1000], convert_to_tensor=True)
             score = util.cos_sim(emb1, emb2).item()
             print(f"Similarity score for {url}: {score}")
             if score > 0.3:  # Baissé le seuil pour plus de résultats

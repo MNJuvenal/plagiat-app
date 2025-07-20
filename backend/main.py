@@ -38,7 +38,7 @@ class TextRequest(BaseModel):
 
 class ReformulateRequest(BaseModel):
     text: str
-    use_ai: bool = True  # Paramètre pour choisir le niveau de reformulation
+    use_ai: bool = False  # Désactiver l'IA par défaut pour économiser la RAM
 
 @app.get("/")
 def read_root():
@@ -88,6 +88,18 @@ async def upload_file(file: UploadFile = File(...)):
 @app.post("/reformulate")
 def reformulate_text_endpoint(data: ReformulateRequest):
     print(f"Received reformulation request. Text length: {len(data.text)}, AI: {data.use_ai}")
-    reformulated = reformulate_text(data.text, use_ai=data.use_ai)
+    
+    # En production, privilégier la reformulation basique pour économiser la RAM
+    is_production = os.getenv("ENVIRONMENT") == "production"
+    use_ai = data.use_ai and not is_production
+    
+    if is_production and data.use_ai:
+        print("Mode production: IA désactivée pour économiser la RAM")
+    
+    reformulated = reformulate_text(data.text, use_ai=use_ai)
     print(f"Reformulated text length: {len(reformulated)}")
-    return {"original": data.text, "reformulated": reformulated, "method": "AI" if data.use_ai else "Basic"}
+    method = "AI" if use_ai else "Basic"
+    if is_production and data.use_ai:
+        method = "Basic (Production Mode)"
+    
+    return {"original": data.text, "reformulated": reformulated, "method": method}
