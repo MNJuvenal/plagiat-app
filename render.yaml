@@ -16,7 +16,7 @@ services:
       - key: SERPAPI_KEY
         value: your_serpapi_key_here
       - key: PYTHON_VERSION
-        value: 3.11
+        value: 3.11.9
       - key: ENVIRONMENT
         value: production
       - key: PORT
